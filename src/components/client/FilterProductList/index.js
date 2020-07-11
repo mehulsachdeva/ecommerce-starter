@@ -12,7 +12,8 @@ class FilterProductList extends Component {
         this.props.setFilterPriceRange(priceArray[0], priceArray[1]);
     }
 
-    resetFilter = () => {
+    resetFilter = (e) => {
+        e.preventDefault();
         this.props.setResetFilter();
     }
 

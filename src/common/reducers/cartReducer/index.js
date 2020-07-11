@@ -19,6 +19,8 @@ export const cartReducer = (state = initialState, action) => {
                 ...state,
                 cart: state.cart.filter((item) => item.id !== action.data)
             };
+        case types.RESET_CART_STATE:
+            return initialState;
         default:
             return state;
     }
