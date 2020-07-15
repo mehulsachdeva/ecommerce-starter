@@ -39,16 +39,20 @@ class ShippingForm extends Component {
 
     updateShippingDetails = async (values) => {
         const { token, userId } = this.props;
-        const obj = {
-            userId,
-            ...values
-        }
-        try {
-            const response = await ApiService.postWithAuthorization(UPDATE_SHIPPING_DETAILS, obj, token);
-            console.log(response);
-            this.props.updateShippingDetails(obj);
-        }catch(err){
-            console.log(err);
+        if(!token || !userId) {
+            this.props.updateShippingDetails(values);
+        }else {
+            const obj = {
+                userId,
+                ...values
+            }
+            try {
+                const response = await ApiService.postWithAuthorization(UPDATE_SHIPPING_DETAILS, obj, token);
+                console.log(response);
+                this.props.updateShippingDetails(obj);
+            }catch(err){
+                console.log(err);
+            }
         }
     }
 

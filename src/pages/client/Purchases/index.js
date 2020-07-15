@@ -21,8 +21,8 @@ class Purchases extends Component {
             this.props.history.push("/")
         } else {
             this.props.getUserLoggedInDetails(userLoggedIn);
+            this.fetchPurchaseHistory(userLoggedIn.userId, userLoggedIn.token);
         }
-        this.fetchPurchaseHistory(userLoggedIn.userId, userLoggedIn.token);
     }
 
     fetchPurchaseHistory = async (userId, token) => {

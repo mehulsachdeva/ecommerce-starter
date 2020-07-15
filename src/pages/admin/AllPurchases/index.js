@@ -18,13 +18,14 @@ class AllPurchases extends Component {
         ) {
             this.props.history.push("/")
         }
+
         this.fetchAllPurchases(userLoggedIn.token )
     }
 
     fetchAllPurchases = async (token) => {
         try {
             const response = await ApiService.getWithAuthorization(FETCH_ALL_PURCHASES, token);
-            console.log(response);
+
             this.setState({
                 ...this.state,
                 purchases: JSON.parse(response.RESPONSE)

@@ -11,6 +11,8 @@ export const userReducer = (state = initialState, action) => {
                 ...state,
                 user: action.data
             };
+        case types.RESET_USER_STATE:
+            return initialState;
         default:
             return state;
     }

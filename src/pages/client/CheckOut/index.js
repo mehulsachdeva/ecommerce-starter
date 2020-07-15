@@ -5,7 +5,7 @@ import AmountDetails from '../../../components/client/AmountDetails';
 import PrimaryButton from '../../../components/client/shared/PrimaryButton';
 import ApiService from '../../../utilities/ApiService';
 import { MAKE_PURCHASE } from '../../../common/constants/urls';
-import { getUserLoggedInDetails, resetCartState } from '../../../common/actions';
+import { getUserLoggedInDetails, resetCartState, resetShippingState } from '../../../common/actions';
 
 class CheckOut extends Component {
 
@@ -16,7 +16,7 @@ class CheckOut extends Component {
            !userLoggedIn.email ||
            !userLoggedIn.token 
         ) {
-            this.props.history.push("/")
+            // this.props.history.push("/")
         } else {
             this.props.getUserLoggedInDetails(userLoggedIn);
         }
@@ -28,17 +28,17 @@ class CheckOut extends Component {
         const address = props.shipping.addressLine1 + ", " + props.shipping.addressLine2 + ", " +
                         props.shipping.city + ", " + props.shipping.country + ", " + props.shipping.postalCode;
         const values = {
-            userId: userLoggedIn.userId,
+            userId: userLoggedIn ? userLoggedIn.userId : -1,
             products: JSON.stringify(props.checkOutProducts),
             totalAmount: props.checkOutAmount,
             paymentOption: "COD",
             paymentStatus: "Pending",
             address
         }
-        console.log(values);
         try {
-            const response = await ApiService.postWithAuthorization(`${MAKE_PURCHASE}`, values, userLoggedIn.token);
+            const response = await ApiService.post(`${MAKE_PURCHASE}`, values);
             this.props.resetCartState();
+            this.props.resetShippingState();
             this.props.history.push("/dashboard");
         }catch(err) {
             this.props.history.push("/cart");
@@ -88,7 +88,8 @@ class CheckOut extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         getUserLoggedInDetails: (data) => dispatch(getUserLoggedInDetails(data)),
-        resetCartState: () => dispatch(resetCartState())
+        resetCartState: () => dispatch(resetCartState()),
+        resetShippingState: () => dispatch(resetShippingState())
     }
 }
 

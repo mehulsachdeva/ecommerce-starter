@@ -7,6 +7,12 @@ export const getUserLoggedInDetails = (data) => {
     }
 }
 
+export const resetUserState = () => {
+    return {
+        type: types.RESET_USER_STATE
+    }
+}
+
 export const addProductToCart = (data) => {
     return {
         type: types.ADD_PRODUCT_TO_CART,

@@ -10,6 +10,7 @@ import Shipping from './pages/client/Shipping';
 import CheckOut from './pages/client/CheckOut';
 import Purchases from './pages/client/Purchases';
 import AddProduct from './pages/admin/AddProduct';
+import UpdateProduct from './pages/admin/UpdateProduct';
 import AllPurchases from './pages/admin/AllPurchases';
 import * as serviceWorker from './serviceWorker';
 import { persistStore, persistReducer } from 'redux-persist'
@@ -51,7 +52,8 @@ ReactDOM.render(
             <Route path = "/shipping" component = {Shipping} />
             <Route path = "/checkout" component = {CheckOut} />
             <Route path = "/purchases" component = {Purchases} />
-            <Route path = "/addproduct" component = {AddProduct} />
+            <Route path = "/addProduct" component = {AddProduct} />
+            <Route path = "/updateProduct/:productId" component = {UpdateProduct} />
             <Route path = "/allpurchases" component = {AllPurchases} />
           </div>
         </Router>

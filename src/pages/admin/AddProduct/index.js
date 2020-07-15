@@ -4,7 +4,7 @@ import ProductForm from '../../../components/admin/ProductForm';
 class AddProduct extends Component {
 
     state = {
-        token: ''
+        token: '',
     }
 
     componentWillMount = () => {
@@ -16,6 +16,7 @@ class AddProduct extends Component {
         ) {
             this.props.history.push("/")
         }
+        
         this.setState({
             ...this.state,
             token: userLoggedIn.token 

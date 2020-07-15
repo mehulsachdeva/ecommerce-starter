@@ -7,12 +7,14 @@ import AmountDetails from '../../../components/client/AmountDetails';
 import PrimaryButton from '../../../components/client/shared/PrimaryButton';
 import ApiService from '../../../utilities/ApiService';
 import { FETCH_SHIPPING_DETAILS } from '../../../common/constants/urls';
+import ShippingForm from '../../../components/client/ShippingForm';
 
 class Cart extends Component {
 
     state = {
         checkOutProducts: [],
-        checkOutAmount: 0
+        checkOutAmount: 0,
+        displayShippingForm: true
     }
 
     componentWillMount = () => {
@@ -22,11 +24,11 @@ class Cart extends Component {
            !userLoggedIn.email ||
            !userLoggedIn.token 
         ) {
-            this.props.history.push("/")
+            // this.props.history.push("/")
         } else {
             this.props.getUserLoggedInDetails(userLoggedIn);
+            this.fetchShippingDetails(userLoggedIn.userId, userLoggedIn.token);
         }
-        this.fetchShippingDetails(userLoggedIn.userId, userLoggedIn.token);
     }
 
     calcTotalCheckOutAmount = (cart) => {
@@ -49,15 +51,30 @@ class Cart extends Component {
         try {
             const response = await ApiService.getWithAuthorization(`${FETCH_SHIPPING_DETAILS}/${userId}`, token);
             const values = JSON.parse(response.RESPONSE);
-            this.props.updateShippingDetails(values);
+            if(Object.keys(values).length > 0) {
+                this.props.updateShippingDetails(values);
+                this.setState({
+                    ...this.state,
+                    displayShippingForm: false
+                })
+            }else {
+                this.setState({
+                    ...this.state,
+                    displayShippingForm: true
+                })
+            }
         }catch(err) {
+            this.setState({
+                ...this.state,
+                displayShippingForm: true
+            })
             console.log(err);
         }
     }
 
     render() {
 
-        const { checkOutAmount, checkOutProducts } = this.state;
+        const { checkOutAmount, checkOutProducts, displayShippingForm } = this.state;
         const { 
             cart, 
             userLoggedIn, 
@@ -71,14 +88,25 @@ class Cart extends Component {
                     token = {userLoggedIn.token}
                     calcTotalCheckOutAmount = {this.calcTotalCheckOutAmount}
                 />
-                 <ShippingDetails 
-                    shipping = {shipping}
-                />
-                <PrimaryButton 
-                    link = {true}
-                    redirectTo = {"/shipping"}
-                    text = {"UPDATE SHIPPING DETAILS"}
-                />
+                {
+                    Object.keys(shipping).length > 0 && (
+                        <div>
+                            <ShippingDetails 
+                                shipping = {shipping}
+                            />
+                            <PrimaryButton 
+                                link = {true}
+                                redirectTo = {"/shipping"}
+                                text = {"UPDATE SHIPPING DETAILS"}
+                            />
+                        </div>
+                    )
+                }
+                {
+                    displayShippingForm && (
+                        <ShippingForm />
+                    )
+                }
                 {
                     checkOutAmount > 0 && (
                         <AmountDetails 
@@ -87,7 +115,7 @@ class Cart extends Component {
                     )
                 }
                 {
-                    checkOutAmount > 0 && (
+                    checkOutAmount > 0 && Object.keys(shipping).length > 0 && (
                         <PrimaryButton 
                             link = {true}
                             redirectTo = {"/checkout"}

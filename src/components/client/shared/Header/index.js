@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { getUserLoggedInDetails, resetCartState } from '../../../../common/actions';
+import { 
+    getUserLoggedInDetails, 
+    resetCartState, 
+    resetShippingState,
+    resetUserState
+} from '../../../../common/actions';
 
 class Header extends Component {
 
     logout = () => {
         localStorage.removeItem("userLoggedIn");
+        this.props.resetUserState();
         this.props.resetCartState();
+        this.props.resetShippingState();
         this.props.history.push("/");
     }
 
@@ -22,11 +29,17 @@ class Header extends Component {
                         <li>
                             Home
                         </li>
-                        <li>
-                            <Link to = "/purchases">
-                                Purchases
-                            </Link>
-                        </li>
+                        {
+                            userLoggedIn.userId && 
+                            userLoggedIn.email && 
+                            userLoggedIn.token && (
+                                <li>
+                                    <Link to = "/purchases">
+                                        Purchases
+                                    </Link>
+                                </li>
+                            )
+                        }
                         <li>
                             About Us
                         </li>
@@ -36,7 +49,9 @@ class Header extends Component {
                             </Link>
                         </li>
                         {
-                            userLoggedIn && (
+                            userLoggedIn.userId && 
+                            userLoggedIn.email && 
+                            userLoggedIn.token && (
                                 <div>
                                     <div>
                                         Hi, {userLoggedIn.email}
@@ -66,7 +81,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getUserLoggedInDetails: (data) => dispatch(getUserLoggedInDetails(data)),
-        resetCartState: () => dispatch(resetCartState())
+        resetCartState: () => dispatch(resetCartState()),
+        resetShippingState: () => dispatch(resetShippingState()),
+        resetUserState: () => dispatch(resetUserState())
     }
 }
 

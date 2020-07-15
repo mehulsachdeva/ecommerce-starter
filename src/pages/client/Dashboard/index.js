@@ -29,7 +29,7 @@ class Dashboard extends Component {
            !userLoggedIn.email ||
            !userLoggedIn.token 
         ) {
-            this.props.history.push("/")
+            // this.props.history.push("/")
         } else {
             this.props.getUserLoggedInDetails(userLoggedIn);
         }
@@ -37,7 +37,7 @@ class Dashboard extends Component {
     }
 
     fetchFilteredProducts = async () => {
-        const token = JSON.parse(localStorage.getItem("userLoggedIn")).token;
+        // const token = JSON.parse(localStorage.getItem("userLoggedIn")).token;
         const { 
             filterProductName, 
             filterMinRange, 
@@ -51,7 +51,7 @@ class Dashboard extends Component {
             page: currentPage
         }
         try {
-            const response = await ApiService.postWithAuthorization(`${FETCH_PRODUCTS}`, obj, token);
+            const response = await ApiService.post(`${FETCH_PRODUCTS}`, obj);
             const parsedResponse = JSON.parse(response.RESPONSE);
             this.setState({
                 ...this.state,

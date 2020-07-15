@@ -16,10 +16,9 @@ class CartList extends Component {
     }
 
     fetchDetailsOfEachCartItem = async (cart) => {
-        const { token } = this.props;
         try {
             for(let i = 0; i < cart.length; i++) {
-                const response = await ApiService.getWithAuthorization(`${FETCH_PRODUCT_BY_ID}/${cart[i].productId}`, token);
+                const response = await ApiService.get(`${FETCH_PRODUCT_BY_ID}/${cart[i].productId}`);
                 const parsedResponse = JSON.parse(response.RESPONSE);
                 this.setState({
                     ...this.state,

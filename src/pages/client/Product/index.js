@@ -20,19 +20,22 @@ class Product extends Component {
            !userLoggedIn.email ||
            !userLoggedIn.token 
         ) {
-            this.props.history.push("/")
+            // this.props.history.push("/")
         } else {
             this.props.getUserLoggedInDetails(userLoggedIn);
         }
         const { productId } = this.props.match.params;
-        this.fetchProductById(productId, userLoggedIn.token);
-
+        if(!productId) {
+            this.props.history.push("/dashboard");
+        }
+        this.fetchProductById(productId);
     }
 
-    fetchProductById = async (productId, token) => {
+    fetchProductById = async (productId) => {
         try {
-            const response = await ApiService.getWithAuthorization(`${FETCH_PRODUCT_BY_ID}/${productId}`, token);
+            const response = await ApiService.getWithAuthorization(`${FETCH_PRODUCT_BY_ID}/${productId}`);
             const productInCart = this.isProductAlreadyAddedToCart(Number(productId));
+
             this.setState({
                 ...this.state,
                 product: JSON.parse(response.RESPONSE),
@@ -46,12 +49,14 @@ class Product extends Component {
     isProductAlreadyAddedToCart(selectedProductId) {
         const { productsInCart } = this.props.location.state;
         let status = false;
+
         for(let i = 0; i < productsInCart.length; i++) {
             if(productsInCart[i].productId === selectedProductId) {
                 status = true;
                 break;
             }
         }
+
         return status;
     }
 
