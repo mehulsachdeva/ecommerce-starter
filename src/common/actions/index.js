@@ -26,3 +26,16 @@ export const resetCartState = () => {
         type: types.RESET_CART_STATE
     }
 }
+
+export const updateShippingDetails = (data) => {
+    return {
+        type: types.UPDATE_SHIPPING_DETAILS,
+        data
+    }
+}
+
+export const resetShippingState = () => {
+    return {
+        type: types.RESET_SHIPPING_STATE
+    }
+}

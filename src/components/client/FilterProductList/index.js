@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { FILTER_BY_PRICE_MENU_OPTIONS } from '../constants';
+import { FILTER_BY_PRICE_MENU_OPTIONS, MIN_VALUE, MAX_VALUE } from '../constants';
 
 class FilterProductList extends Component {
+
+    state = {
+        filterMenuOptions: FILTER_BY_PRICE_MENU_OPTIONS
+    }
 
     filterProductName = (e) => {
         this.props.setFilterProductName(e.target.value);
@@ -12,12 +16,14 @@ class FilterProductList extends Component {
         this.props.setFilterPriceRange(priceArray[0], priceArray[1]);
     }
 
-    resetFilter = (e) => {
-        e.preventDefault();
+    resetFilter = () => {
         this.props.setResetFilter();
     }
 
     render() {
+
+        const { filterMenuOptions } = this.state;
+
         return (
             <form>
                 <div>
@@ -28,11 +34,17 @@ class FilterProductList extends Component {
                     />
                 </div>
                 <div>
-                    <select onChange = {this.filterPriceRange}>
+                    <select 
+                        onChange = {this.filterPriceRange}
+                        defaultValue = {`${MIN_VALUE}-${MAX_VALUE}`}
+                    >
                     {
-                        FILTER_BY_PRICE_MENU_OPTIONS.map((range, index) => {
+                        filterMenuOptions.map((range, index) => {
                             return (
-                                <option key = {index} value = {`${range.min}-${range.max}`}>
+                                <option 
+                                    key = {index} 
+                                    value = {`${range.min}-${range.max}`}
+                                >
                                     {range.text}
                                 </option>
                             );
@@ -41,11 +53,11 @@ class FilterProductList extends Component {
                     </select>
                 </div>
                 <div>
-                    <button
+                    <input
+                        type = "reset"
                         onClick = {this.resetFilter}
-                    >
-                        RESET
-                    </button>
+                        value = "RESET"
+                    />
                 </div>
             </form>
         );

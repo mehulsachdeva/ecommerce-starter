@@ -17,7 +17,7 @@ export const cartReducer = (state = initialState, action) => {
         case types.REMOVE_PRODUCT_FROM_CART:
             return {
                 ...state,
-                cart: state.cart.filter((item) => item.id !== action.data)
+                cart: state.cart.filter((item) => item.productId !== action.data)
             };
         case types.RESET_CART_STATE:
             return initialState;

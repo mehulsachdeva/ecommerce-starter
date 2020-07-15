@@ -24,7 +24,7 @@ class ProductList extends Component {
         let status = false;
         if(productsInCart) {
             for(let i = 0; i < productsInCart.length; i++) {
-                if(productsInCart[i].id === selectedProductId) {
+                if(productsInCart[i].productId === selectedProductId) {
                     status = true;
                     break;
                 }
@@ -35,8 +35,10 @@ class ProductList extends Component {
 
     addToCart = (selectedProductId) => {
         const { products } = this.props;
-        const productSelected = products.filter((product) => product.id === selectedProductId);
-        this.props.addProductToCart(...productSelected);
+        const productSelected = products.filter((product) => product.productId === selectedProductId);
+        this.props.addProductToCart({
+            productId: productSelected[0].productId
+        });
     }
 
     removeFromCart = (selectedProductId) => {
@@ -56,7 +58,7 @@ class ProductList extends Component {
                             return (
                                     <div key = {index}>
                                         <Link to = {{
-                                            pathname: `/product/${product.id}`,
+                                            pathname: `/product/${product.productId}`,
                                             state: {
                                                 productsInCart: productsInCart
                                             }
@@ -73,25 +75,37 @@ class ProductList extends Component {
                                         </Link>
                                         <div>
                                             {
-                                                this.isProductAlreadyAddedToCart(product.id) ? (
-                                                    <div>
+                                                this.isProductAlreadyAddedToCart(product.productId) ? (
+                                                    product.isAvailable ? (
                                                         <div>
-                                                            Product In Cart
+                                                            <div>
+                                                                Product In Cart
+                                                            </div>
+                                                            <div>
+                                                                <button
+                                                                    onClick = {() => this.removeFromCart(product.productId)}
+                                                                >
+                                                                    Remove From Cart
+                                                                </button>
+                                                            </div>
                                                         </div>
+                                                    ) : (
                                                         <div>
-                                                            <button
-                                                                onClick = {() => this.removeFromCart(product.id)}
-                                                            >
-                                                                Remove From Cart
-                                                            </button>
+                                                            SOLD OUT
                                                         </div>
-                                                    </div>
+                                                    )
                                                 ) : (
-                                                    <button 
-                                                        onClick = {() => this.addToCart(product.id)}
-                                                    >
-                                                        Add To Cart
-                                                    </button>
+                                                    product.isAvailable ? (
+                                                        <button 
+                                                            onClick = {() => this.addToCart(product.productId)}
+                                                        >
+                                                            Add To Cart
+                                                        </button>
+                                                    ) : (
+                                                        <div>
+                                                            SOLD OUT
+                                                        </div>
+                                                    )
                                                 )
                                             }
                                         </div>

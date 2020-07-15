@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class ShippingDetails extends Component {
     render() {
 
-        const { shippingDetails } = this.props;
+        const { shipping } = this.props;
 
         return (
             <div>
@@ -11,11 +12,11 @@ class ShippingDetails extends Component {
                     Delivery To:
                 </div>
                 <div>
-                    {shippingDetails.addressLine1},
-                    {shippingDetails.addressLine2},
-                    {shippingDetails.postalCode},
-                    {shippingDetails.city},
-                    {shippingDetails.country},
+                    {shipping.addressLine1},
+                    {shipping.addressLine2},
+                    {shipping.postalCode},
+                    {shipping.city},
+                    {shipping.country}
                 </div>
             </div>
         );

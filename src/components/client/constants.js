@@ -1,1 +1,3 @@
-export const FILTER_BY_PRICE_MENU_OPTIONS = [{ text: "Below 1K", min: 0, max: 1000 }, { text: "1K - 2K", min: 1000, max: 2000 }, { text: "3K - 4K", min: 3000, max: 4000 }, { text: "Above 4K", min: 4000, max: 999999999 }];
+export const MIN_VALUE = 0;
+export const MAX_VALUE = 999999999;
+export const FILTER_BY_PRICE_MENU_OPTIONS = [{ text: "-- Price Range --", min: MIN_VALUE, max: MAX_VALUE }, { text: "Below 10K", min: MIN_VALUE, max: 10000, disabled: false }, { text: "10K - 20K", min: 10000, max: 20000, disabled: false }, { text: "30K - 40K", min: 30000, max: 40000, disabled: false }, { text: "40K - 50K", min: 40000, max: 50000, disabled: false }, { text: "Above 50K", min: 50000, max: MAX_VALUE, disabled: false }];

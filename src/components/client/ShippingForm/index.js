@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Formik } from 'formik';
 import ApiService from '../../../utilities/ApiService';
 import { UPDATE_SHIPPING_DETAILS, FETCH_SHIPPING_DETAILS } from '../../../common/constants/urls';
+import { updateShippingDetails } from '../../../common/actions';
+
+const initialValues = {
+    addressLine1: '',
+    addressLine2: '',
+    postalCode: '',
+    city: '',
+    country: ''
+}
 
 const validation = (values) => {
     const errors = {};
@@ -20,23 +30,8 @@ const validation = (values) => {
     return errors;
 }
 
-
 class ShippingForm extends Component {
     
-    state = {
-        initialValues: {
-            addressLine1: '',
-            addressLine2: '',
-            postalCode: '',
-            city: '',
-            country: ''
-        }
-    }
-
-    componentWillMount = () => {
-        this.fetchShippingDetails();
-    }
-
     handleSubmit = (values, { setSubmitting }) => {
         this.updateShippingDetails(values);
         setSubmitting(false);
@@ -44,42 +39,26 @@ class ShippingForm extends Component {
 
     updateShippingDetails = async (values) => {
         const { token, userId } = this.props;
+        const obj = {
+            userId,
+            ...values
+        }
         try {
-            const response = await ApiService.postWithAuthorization(UPDATE_SHIPPING_DETAILS, { userId, ...values }, token);
+            const response = await ApiService.postWithAuthorization(UPDATE_SHIPPING_DETAILS, obj, token);
             console.log(response);
+            this.props.updateShippingDetails(obj);
         }catch(err){
             console.log(err);
         }
     }
 
-    fetchShippingDetails = async () => {
-        const { token, userId } = this.props;
-        try {
-            const response = await ApiService.getWithAuthorization(`${FETCH_SHIPPING_DETAILS}/${userId}`, token);
-            const values = JSON.parse(response.RESPONSE);
-            this.setState({
-                ...this.state,
-                initialValues: {
-                    addressLine1: values.addressLine1,
-                    addressLine2: values.addressLine2,
-                    postalCode: values.postalCode,
-                    city: values.city,
-                    country: values.country
-                }
-            })
-        }catch(err) {
-            console.log(err);
-        }
-    }
-
     render() {
-
-        const { initialValues } = this.state;
         
+        const { shipping } = this.props;
+
         return (
             <Formik
-                enableReinitialize
-                initialValues={initialValues}
+                initialValues={shipping || initialValues}
                 validate={validation}
                 onSubmit={this.handleSubmit}
             >
@@ -183,4 +162,19 @@ class ShippingForm extends Component {
     }
 }
 
-export default ShippingForm;
+const mapStateToProps = (state) => {
+    return {
+        shipping: state.shippingInfo.shippingDetails
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateShippingDetails: (data) => dispatch(updateShippingDetails(data))
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ShippingForm);

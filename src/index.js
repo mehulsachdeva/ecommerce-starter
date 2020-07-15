@@ -6,6 +6,11 @@ import Register from './pages/client/Register';
 import Dashboard from './pages/client/Dashboard';
 import Product from './pages/client/Product';
 import Cart from './pages/client/Cart';
+import Shipping from './pages/client/Shipping';
+import CheckOut from './pages/client/CheckOut';
+import Purchases from './pages/client/Purchases';
+import AddProduct from './pages/admin/AddProduct';
+import AllPurchases from './pages/admin/AllPurchases';
 import * as serviceWorker from './serviceWorker';
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
@@ -41,8 +46,13 @@ ReactDOM.render(
             <Route exact path = "/" component = {Home} />
             <Route path = "/register" component = {Register} />
             <Route path = "/dashboard" component = {Dashboard} />
-            <Route path = "/product/:id" component = {Product} />
+            <Route path = "/product/:productId" component = {Product} />
             <Route path = "/cart" component = {Cart} />
+            <Route path = "/shipping" component = {Shipping} />
+            <Route path = "/checkout" component = {CheckOut} />
+            <Route path = "/purchases" component = {Purchases} />
+            <Route path = "/addproduct" component = {AddProduct} />
+            <Route path = "/allpurchases" component = {AllPurchases} />
           </div>
         </Router>
       </PersistGate>

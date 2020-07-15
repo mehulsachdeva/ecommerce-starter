@@ -5,37 +5,16 @@ import ProductList from '../../../components/client/ProductList';
 import Footer from '../../../components/client/shared/Footer';
 import FilterProductList from '../../../components/client/FilterProductList';
 import { getUserLoggedInDetails } from '../../../common/actions';
-
-const data = [
-    {
-        id: 1,
-        name: 'Product 1',
-        description: 'Product 1 Description',
-        price: 1000
-    },
-    {
-        id: 2,
-        name: 'Product 2',
-        description: 'Product 2 Description',
-        price: 1200
-    },
-    {
-        id: 3,
-        name: 'Product 3',
-        description: 'Product 3 Description',
-        price: 2700
-    },
-    {
-        id: 4,
-        name: 'Product 4',
-        description: 'Product 4 Description',
-        price: 5200
-    }
-];
+import ApiService from '../../../utilities/ApiService';
+import { FETCH_PRODUCTS } from '../../../common/constants/urls';
+import Pagination from '../../../components/client/Pagination';
+import { MIN_VALUE, MAX_VALUE } from '../../../components/client/constants';
 
 class Dashboard extends Component {
 
     state = {
+        totalPages: 1,
+        currentPage: 0,
         products: [],
         copyProducts: [],
         filterProductName: '',
@@ -54,13 +33,35 @@ class Dashboard extends Component {
         } else {
             this.props.getUserLoggedInDetails(userLoggedIn);
         }
-        this.setState({
-            ...this.state,
-            products: data,
-            copyProducts: data
-        }, () => {
-            this.performFilteringOnProducts();
-        })
+        this.fetchFilteredProducts();
+    }
+
+    fetchFilteredProducts = async () => {
+        const token = JSON.parse(localStorage.getItem("userLoggedIn")).token;
+        const { 
+            filterProductName, 
+            filterMinRange, 
+            filterMaxRange ,
+            currentPage
+        } = this.state;
+        const obj = {
+            name: filterProductName,
+            min: filterMinRange,
+            max: filterMaxRange,
+            page: currentPage
+        }
+        try {
+            const response = await ApiService.postWithAuthorization(`${FETCH_PRODUCTS}`, obj, token);
+            const parsedResponse = JSON.parse(response.RESPONSE);
+            this.setState({
+                ...this.state,
+                totalPages: Number(parsedResponse.totalPages),
+                products: parsedResponse.content,
+                copyProducts: parsedResponse.content
+            })
+        }catch(err) {   
+            console.log(err);
+        }
     }
     
     setFilterProductName = (productName) => {
@@ -68,7 +69,7 @@ class Dashboard extends Component {
             ...this.state,
             filterProductName: productName
         }, () => {
-            this.performFilteringOnProducts();
+            this.fetchFilteredProducts();
         })
     }
 
@@ -78,7 +79,7 @@ class Dashboard extends Component {
             filterMinRange: Number(filterMinRange),
             filterMaxRange: Number(filterMaxRange)
         }, () => {
-            this.performFilteringOnProducts();
+            this.fetchFilteredProducts();
         })
     }
 
@@ -86,32 +87,25 @@ class Dashboard extends Component {
         this.setState({
             ...this.state,
             filterProductName: '',
-            filterMinRange: 0,
-            filterMaxRange: 999999999
+            filterMinRange: MIN_VALUE,
+            filterMaxRange: MAX_VALUE
         }, () => {
-            this.performFilteringOnProducts();
+            this.fetchFilteredProducts();
         })
     }
 
-    performFilteringOnProducts = () => {
-        const { 
-            copyProducts, 
-            filterProductName, 
-            filterMinRange, 
-            filterMaxRange 
-        } = this.state;
+    setCurrentPage = (currentPage) => {
         this.setState({
             ...this.state,
-            products: copyProducts.filter((product) => 
-                product.name.toLowerCase().includes(filterProductName.toLowerCase()) &&
-                product.price >= filterMinRange && product.price <= filterMaxRange
-            )
+            currentPage
+        }, () => {
+            this.fetchFilteredProducts();
         })
     }
 
     render() {
 
-        const { products } = this.state;
+        const { products, totalPages } = this.state;
 
         return (
             <div>
@@ -123,6 +117,10 @@ class Dashboard extends Component {
                 />
                 <ProductList 
                     products = {products}
+                />
+                <Pagination 
+                    totalPages = {totalPages}
+                    setCurrentPage = {this.setCurrentPage}
                 />
                 <Footer />
             </div>

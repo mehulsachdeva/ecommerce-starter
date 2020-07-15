@@ -1,33 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import ProductView from '../../../components/client/ProductView';
 import Header from '../../../components/client/shared/Header';
-
-const data = [
-    {
-        id: 1,
-        name: 'Product 1',
-        description: 'Product 1 Description',
-        price: 1000
-    },
-    {
-        id: 2,
-        name: 'Product 2',
-        description: 'Product 2 Description',
-        price: 1200
-    },
-    {
-        id: 3,
-        name: 'Product 3',
-        description: 'Product 3 Description',
-        price: 2700
-    },
-    {
-        id: 4,
-        name: 'Product 4',
-        description: 'Product 4 Description',
-        price: 5200
-    }
-];
+import ApiService from '../../../utilities/ApiService';
+import { FETCH_PRODUCT_BY_ID } from '../../../common/constants/urls';
+import { getUserLoggedInDetails } from '../../../common/actions';
 
 class Product extends Component {
 
@@ -37,21 +14,40 @@ class Product extends Component {
     }
 
     componentWillMount = () => {
-        const { id } = this.props.match.params;
-        const productInCart = this.isProductAlreadyAddedToCart(Number(id));
-        const product = data.filter((item) => item.id === Number(id));
-        this.setState({
-            ...this.state,
-            product,
-            productInCart
-        })
+        const userLoggedIn = JSON.parse(localStorage.getItem("userLoggedIn"));
+        if(!userLoggedIn || 
+           !userLoggedIn.userId ||
+           !userLoggedIn.email ||
+           !userLoggedIn.token 
+        ) {
+            this.props.history.push("/")
+        } else {
+            this.props.getUserLoggedInDetails(userLoggedIn);
+        }
+        const { productId } = this.props.match.params;
+        this.fetchProductById(productId, userLoggedIn.token);
+
+    }
+
+    fetchProductById = async (productId, token) => {
+        try {
+            const response = await ApiService.getWithAuthorization(`${FETCH_PRODUCT_BY_ID}/${productId}`, token);
+            const productInCart = this.isProductAlreadyAddedToCart(Number(productId));
+            this.setState({
+                ...this.state,
+                product: JSON.parse(response.RESPONSE),
+                productInCart
+            })
+        }catch(err) {
+            console.log(err);
+        }
     }
 
     isProductAlreadyAddedToCart(selectedProductId) {
         const { productsInCart } = this.props.location.state;
         let status = false;
         for(let i = 0; i < productsInCart.length; i++) {
-            if(productsInCart[i].id === selectedProductId) {
+            if(productsInCart[i].productId === selectedProductId) {
                 status = true;
                 break;
             }
@@ -67,15 +63,25 @@ class Product extends Component {
             <div>
                 <Header />
                 {
-                    product.length > 0 && 
-                    <ProductView 
-                        product = {product}
-                        productInCart = {productInCart}
-                    />
+                    Object.keys(product).length > 0 && (
+                        <ProductView 
+                            product = {product}
+                            productInCart = {productInCart}
+                        />
+                    )
                 }
             </div>
         );
     }
 }
 
-export default Product;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getUserLoggedInDetails: (data) => dispatch(getUserLoggedInDetails(data))
+    }
+}
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(Product);

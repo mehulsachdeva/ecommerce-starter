@@ -23,6 +23,11 @@ class Header extends Component {
                             Home
                         </li>
                         <li>
+                            <Link to = "/purchases">
+                                Purchases
+                            </Link>
+                        </li>
+                        <li>
                             About Us
                         </li>
                         <li>

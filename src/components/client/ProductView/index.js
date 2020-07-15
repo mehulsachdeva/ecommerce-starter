@@ -5,9 +5,9 @@ import { addProductToCart, removeProductFromCart } from '../../../common/actions
 class ProductView extends Component {
 
     state = {
-        product: [],
+        product: {},
         productsInCart: [],
-        productInCart: false
+        productInCart: this.props.productInCart
     }
 
     componentWillMount = () => {
@@ -34,7 +34,7 @@ class ProductView extends Component {
         let status = false;
         if(productsInCart) {
             for(let i = 0; i < productsInCart.length; i++) {
-                if(productsInCart[i].id === selectedProductId) {
+                if(productsInCart[i].productId === selectedProductId) {
                     status = true;
                     break;
                 }
@@ -44,8 +44,10 @@ class ProductView extends Component {
     }
 
     addToCart = () => {
-        const productSelected = this.props.product[0];
-        this.props.addProductToCart(productSelected);
+        const productSelected = this.props.product;
+        this.props.addProductToCart({
+            productId: productSelected.productId
+        });
         this.setState({
             ...this.state,
             productInCart: true
@@ -68,37 +70,49 @@ class ProductView extends Component {
             <div>
                 <div>
                     <div>
-                        {product[0].name}
+                        {product.name}
                     </div>
                     <div>
-                        {product[0].description}
+                        {product.description}
                     </div>
                     <div>
-                        {product[0].price}
+                        {product.price}
                     </div>
                 </div>
                 <div>
                     <div>
                         {
                             productInCart ? (
-                                <div>
+                                product.isAvailable ? (
                                     <div>
-                                        Product In Cart
+                                        <div>
+                                            Product In Cart
+                                        </div>
+                                        <div>
+                                            <button
+                                                onClick = {() => this.removeFromCart(product.productId)}
+                                            >
+                                                Remove From Cart
+                                            </button>
+                                        </div>
                                     </div>
+                                ) : (
                                     <div>
-                                        <button
-                                            onClick = {() => this.removeFromCart(product[0].id)}
-                                        >
-                                            Remove From Cart
-                                        </button>
+                                        SOLD OUT
                                     </div>
-                                </div>
+                                )
                             ) : (
-                                <button 
-                                    onClick = {this.addToCart}
-                                >
-                                    Add To Cart
-                                </button>
+                                product.isAvailable ? (
+                                    <button 
+                                        onClick = {this.addToCart}
+                                    >
+                                        Add To Cart
+                                    </button>
+                                ) : (
+                                    <div>
+                                        SOLD OUT
+                                    </div>
+                                )
                             )
                         }
                     </div>
